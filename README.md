@@ -19,7 +19,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 ## 1. Setting up the OS environment
 
   Before you start doing anything you should think about a security concept. A -detailed security concept- is out of scope for this tutorial. Very important from security point of view is not to run your Glassfish server as `root`. This means you need to create a user with restricted rights which you can use for running Glassfish. Once you have added a new user, let's say 'gladmin', you might also want to add a new group called 'gf-admins'. You can use this group for all users that shall be allowed to "administer" your Glassfish in -full depth-. In full depth means also modifying different files in the Glassfish home directory. Below you find user and group related commands that you might want to use.
-  Bash commands:
+  Here are the commands:
 
   ```
   sudo adduser --home /home/glassfish --system --shell /bin/bash glassfish
@@ -98,7 +98,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   ```
 
   Finally you have to make sure that both files are executable. For that you only need to execute the following commands once.
-  Bash commands:
+  Here are the commands:
 
   ```  
   sudo chmod +x /etc/network/if-post-down.d/iptablessave
@@ -284,7 +284,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 ## 3. Downloading and Installing Glassfish
 
   Now we can download Glassfish. I suggest to switch the user now to glassfish, which we have created in the first step. We want to download the Glassfish zip installation file to /home/glassfish/downloads/. Afterwards the zip file has to be extracted and the content can be moved to /home/glassfish/ - this is everything needed for installing Glassfish. Usually the zip file is extracted to a directory called ./glassfish4/. Make sure to move the content of ./glassfish4/ and not ./glassfish4 itself to /home/glassfish/.
-  Bash commands:
+  Here are the commands:
 
   ```  
   #if you dont't have "unzip" installed run this here first
@@ -332,7 +332,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   ```
 
   At this point you can give it a try and start you Glassfish server. But do not forget to stop it again before you continue with the next steps. Here are the commands for starting and stopping Glassfish:
-  Bash commands:
+  Here are the commands:
 
   ```  
   #now switch user to the glassfish user
@@ -352,7 +352,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 
 ## 4. Setting up an init script
 
-  Let's create an init script now. It helps you to start, stop and restart your Glassfish easily. We also need this to make Glassfish start up automatically whenever Ubuntu is rebooting. The file we need to create is /etc/init.d/glassfish. For starting and stopping Glassfish we will use the asadmin tool that ships with Glassfish (we used it a little in the previous step). Bash commands:
+  Let's create an init script now. It helps you to start, stop and restart your Glassfish easily. We also need this to make Glassfish start up automatically whenever Ubuntu is rebooting. The file we need to create is /etc/init.d/glassfish. For starting and stopping Glassfish we will use the asadmin tool that ships with Glassfish (we used it a little in the previous step). Here are the commands:
 
   ```  
   #create and edit file
@@ -393,7 +393,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 ## 5. Glassfish autostart: adding init script to default runlevels
 
   The init script is set up. Now we can add it to the default run levels. This way our Glassfish will startup whenever Ubuntu is restarted.
-  Bash commands:
+  Here are the commands:
 
   ```  
   #make the init script file executable
@@ -411,7 +411,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 
   From now on you can start, stop or restart your Glassfish like this (Ubuntu will also do it this way):
 
-  Bash commands:
+  Here are the commands:
 
   ```
   #start
@@ -426,11 +426,9 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 
 ## 6. Security configuration before first startup
 
-  Even now we should not really use Glassfish in production. We will now begin the configuration of Glassfish itself. You should always run these steps, for example changing the default passwords, enabling https, changing the default ssl certificate to be used for https etc. We will also put our attention on Glassfish obfuscation.
+  Even now we should not really use Glassfish in production. We will now begin the configuration of Glassfish itself. You should always run these steps, for example changing the default passwords, enabling `https`, changing the default ssl certificate to be used for `https` etc. We will also put our attention on Glassfish obfuscation.
 
-  Our first step is to change the master password. Glassfish uses it to protect the domain-encrypted files from unauthorized access, i.e. the certificate store which contains the certificates for https communication. When Glassfish is starting up it tries to read such "secured" files - for exactly this purpose Glassfish needs to be provided with the master password either in an intertactive way or in a non-interactive way. I will choose the non-interactive way because we want our Glassfish to start up on Ubuntu reboot as a deamon (in the Windows world this would be called a service). This is necessary so that the start-domain command can start the server without having to prompt the user. To accomplish this we need to set the savemasterpassword option to true. This option indicates whether the master password should be written to the file system. The file is called master-password and can be found at /home/glassfish/glassfish/domains/domain1/master-password. To change the master password you have to ensure that Glassfish is not running - only then you can call the command change-master-password which will interactivly ask you for the new password.
-
-  Bash commands:
+  * Our first step is to change the master password. Glassfish uses it to protect the domain-encrypted files from unauthorized access, i.e. the certificate store which contains the certificates for `https` communication. When Glassfish is starting up it tries to read such "secured" files - for exactly this purpose Glassfish needs to be provided with the master password either in an interactive way or in a non-interactive way. I will choose the non-interactive way because we want our Glassfish to start up on Ubuntu reboot as a deamon (in the Windows world this would be called a service). This is necessary so that the `start-domain` command can start the server without having to prompt the user. To accomplish this we need to set the `savemasterpassword` option to true. This option indicates whether the master password should be written to the file system. The file is called master-password and can be found at `/home/glassfish/glassfish/domains/domain1/master-password`. To change the master password you have to ensure that Glassfish is not running - only then you can call the command `change-master-password` which will interactively ask you for the new password. Here are the commands:
 
   ```
   #switch user to glassfish (stay with this user for complete Step 6!)
@@ -442,9 +440,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   # ==> stores file to /home/glassfish/glassfish/domains/domain1/master-password
   ```
 
-  The next step is to change the administration password with change-admin-password. Because this command is a remote command we need to ensure that Glassfish is running before we can execute the command. Since we want "automatic login" we will create an admin password file allowing us to login without being asked for credetials (it will be stored at /home/glassfish/.gfclient/pass).
-  
-  Bash commands:
+  * The next step is to change the administration password with `change-admin-password`. Because this command is a remote command we need to ensure that Glassfish is running before we can execute the command. Since we want "automatic login" we will create an admin password file allowing us to login without being asked for credetials (it will be stored at `/home/glassfish/.gfclient/pass`). Here are the commands:
 
   ```
   #change admin password
@@ -467,9 +463,9 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   /home/glassfish/bin/asadmin stop-domain domain1
   ```
 
-  Glassfish is coming with a pre-configured certificate which is used for ssl (https). You can see it in the keystore.jks file if you check for the alias s1as. Since Glassfish 3.1 there is even another preconfigured certificate available: glassfish-instance. But that also means that everybody else can get these two certificates, the public keys, private keys, etc. With that information you could never be safe because "others" could "read" your data sent to Glassfish via https. That means you should always make sure to replace the pre-configured s1as and glassfish-instance entries in your keystore. But you should not delete them as long as the alias "s1as" and "glassfish-instance" are still in use (and it is by default in use for https...). I faced some strange behaviour as I did not think of that at the beginning when I simply deleted s1as - learn from my mistake and do not delete it for now... But we can help us with generating a new alias first (myAlias) and when ever needed or wanted we could change each occurrence of s1as to myAlias (i.e. via admin console) and then we could finally delete that s1as. The same has to be done also for glassfish-instance.
+  * Glassfish is coming with a pre-configured certificate which is used for ssl (`https`). You can see it in the `keystore.jks` file if you check for the alias `s1as`. Since Glassfish 3.1 there is even another preconfigured certificate available: glassfish-instance. But that also means that everybody else can get these two certificates, the public keys, private keys, etc. With that information you could never be safe because "others" could "read" your data sent to Glassfish via `https`. That means you should always make sure to replace the pre-configured `s1as` and `glassfish-instance` entries in your `keystore`. But you should not delete them as long as the alias `s1as` and `glassfish-instance` are still in use. I faced some strange behavior as I did not think of that at the beginning when I simply deleted `s1as` - learn from my mistake and do not delete it for now... But we can help us with generating a new alias first `myAlias` and when ever needed or wanted we could change each occurrence of `s1as` to `myAlias` (i.e. via admin console) and then we could finally delete that `s1as`. The same has to be done also for `glassfish-instance`.
 
-  The following code box shows you the commands we need for modifying our Glassfish keystore. As you can see we first delete our pre-configured s1as entry (Glassfish mustn't be running!). Later a new s1as entry is generated - it is now unique for us! Similar steps have to be executed also for our second certificate (glassfish-instance). Bash commands:
+  The following code box shows you the commands we need for modifying our Glassfish keystore. As you can see we first delete our pre-configured `s1as` entry (Glassfish mustn't be running!). Later a new `s1as` entry is generated - it is now unique for us! Similar steps have to be executed also for our second certificate `glassfish-instance`. Here are the commands:
   
   ```
   #create new certs
@@ -497,13 +493,15 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   rm glassfish-instance.cert s1as.cert
   ```
 
-  Now we want to enable `https` for the admin console. Once we have done that we can be sure that nobody can listen to our data sent via `https` because nobody else has our certificates, i.e. nobody can decrypt our password used for entering the admin console via browser (in case someone cought our data packages). However, sometimes clients want to connect via `https` using `SSLv3`, which is considered to be vulnerable nowadays (ever heard about "Poodle"?). In other words: **disable SSLv3 completely where ever you find it - no discussion about that allowed!** [Here is a great post about different ways of disabling SSLv3 in Glassfish 4.1][6.5]. I typically use the command line version (`asadmin`). Furthermore, it seems that Glassfish 4.1.1 does not disable TLS client-initiated renegotiation by default, which is considered to open some doors for DoS attacks. The article [TLS Renegotiation and Denial of Service Attacks][6.4] by Ivan Ristic is a good read. For us this means we need to disable client-initiated renegotiation somehow. But this is not all we want to do here. We want to change some of the default JVM Options and we want to make our Glassfish not telling too much ("obfuscation").
+  Now we want to enable `https` for the admin console. Once we have done that we can be sure that nobody can listen to our data sent via `https` because nobody else has our certificates, i.e. nobody can decrypt our password used for entering the admin console via browser (in case someone cought our data packages). However, sometimes clients want to connect via `https` using `SSLv3`, which is considered to be vulnerable nowadays. In other words: **disable SSLv3 completely where ever you find it - no discussion about that allowed!** 
+
+  Here is a great post about [different ways of disabling SSLv3 in Glassfish 4.1][6.5]. I recommend use the command line version (`asadmin`). Furthermore, it seems that Glassfish 4.1.1 does not disable TLS client-initiated renegotiation by default, which is considered to open some doors for DoS attacks. The article [TLS Renegotiation and Denial of Service Attacks][6.4] by Ivan Ristic is a good read. For us this means we need to disable client-initiated renegotiation somehow. But this is not all we want to do here. We want to change some of the default JVM Options and we want to make our Glassfish not telling too much ("obfuscation").
 
   The first JVM Option we will change is replacing the `-client` option with the `-server` option. I expect the java option `-server` to be the better choice when it comes to performance. I have also decided to change `-Xmx512m` (Glassfish default) to a higher value: `-Xmx4096m`. Additionally, I have added `-Xms4096m`. Furthermore, we will remove `-XX:MaxPermSize=192m` and replace it with `-XX:MaxMetaspaceSize=512m` because [`-XX:MaxPermSize` was deprecated in JDK 8][6.3]. If you want to find out more about it then have a look at [this InfoQ article][6.2]. For more information about JVM options please check the [Oracle's official documentation][6.1].
   All JVM Options so far are optional. But at least adding `-Dproduct.name=""` is a good idea for everyone. If you would not add this then each http/https response will contain a header field like this: **Server: GlassFish Server Open Source Edition 4.1**
   This is some great piece of information for hackers - that's why you should disable it. We don't want Glassfish to talk too much for security reasons!
 
-  We also don't want Glassfish to send a header similar to **X-Powered-By: Servlet/3.1 JSP/2.3** because this is telling everyone we are using a Servlet 3.1 container and that we are (of course) using Java etc. So we have to disable sending x-powered-by in the http/https headers. After executing the commands below our Glassfish will run in silent mode - it is not telling too much any more. Glassfish obfuscation accomplished. SSLv3 and cient-initiated renegotiation will also be disabled, which reduces the surface for attacks. Bash commands:
+  We also don't want Glassfish to send a header similar to **X-Powered-By: Servlet/3.1 JSP/2.3** because this is telling everyone we are using a Servlet 3.1 container and that we are (of course) using Java etc. So we have to disable sending x-powered-by in the http/https headers. After executing the commands below our Glassfish will run in silent mode - it is not telling too much any more. Glassfish obfuscation accomplished. SSLv3 and cient-initiated renegotiation will also be disabled, which reduces the surface for attacks. Here are the commands:
 
   [6.1]: http://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html
   [6.2]: http://www.infoq.com/articles/Java-PERMGEN-Removed
@@ -572,7 +570,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   ```
 
 ## 7. Run Glassfish
-  Finally we have come to where we wanted. We have installed, secured and configured our Glassfish installation. Bash commands:
+  Finally we have come to where we wanted. We have installed, secured and configured our Glassfish installation. Here are the commands:
 
   ```
   #starting glassfish
