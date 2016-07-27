@@ -16,7 +16,7 @@ This is my tutorial where I described how to install Glassfish on Ubuntu. I hope
 
 Creating this tutorial meant a lot of effort - although I could reuse a lot of the work I invested into my previous tutorial. 
 
-1. Setting up the OS environment
+## 1. Setting up the OS environment
 
 	Before you start doing anything you should think about a security concept. A -detailed security concept- is out of scope for this tutorial. Very important from security point of view is not to run your Glassfish server as `root`. This means you need to create a user with restricted rights which you can use for running Glassfish. Once you have added a new user, let's say 'gladmin', you might also want to add a new group called 'gf-admins'. You can use this group for all users that shall be allowed to "administer" your Glassfish in -full depth-. In full depth means also modifying different files in the Glassfish home directory. Below you find user and group related commands that you might want to use.
 	Bash commands:
@@ -132,7 +132,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 
 	Your firewall settings are loaded automatically whenever Ubuntu is starting up. We can continue with the next steps. Please do not forget that these are only some minimum firewall settings. For maximum security you might need to add your own `iptables` rules.
 
-2. Setting up Java
+## 2. Setting up Java
 
 	The next step is to set up Java. As you can see on [the official Oracle Glassfish 4.1.1 download site](http://download.java.net/glassfish/4.1.1/release/glassfish-4.1.1.zip) it is recommended to use the latest Oracle JDK 8 for GlassFish 4.1. On the other hand you can see that Java EE 7 requires at least JDK 7 or above. That means these are the minimum versions you want to use! I suggest to remove the ObenJDK first if you have it installed and install the Oracle JDK and JRE. I also suggest to remove any previous Sun/Oracle JDK and JRE already installed on your system. On a production system I don't suggest to use the ObenJDK because it is not certified (but that's another story...).
 
@@ -281,7 +281,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 	#also add this because of Logjam attack:
 	jdk.tls.ephemeralDHKeySize=2048
 	```
-3. Downloading and Installing Glassfish
+## 3. Downloading and Installing Glassfish
 
 	Now we can download Glassfish. I suggest to switch the user now to glassfish, which we have created in the first step. We want to download the Glassfish zip installation file to /home/glassfish/downloads/. Afterwards the zip file has to be extracted and the content can be moved to /home/glassfish/ - this is everything needed for installing Glassfish. Usually the zip file is extracted to a directory called ./glassfish4/. Make sure to move the content of ./glassfish4/ and not ./glassfish4 itself to /home/glassfish/.
 	Bash commands:
@@ -350,7 +350,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 	exit
 	```
 
-4. Setting up an init script
+## 4. Setting up an init script
 
 	Let's create an init script now. It helps you to start, stop and restart your Glassfish easily. We also need this to make Glassfish start up automatically whenever Ubuntu is rebooting. The file we need to create is /etc/init.d/glassfish. For starting and stopping Glassfish we will use the asadmin tool that ships with Glassfish (we used it a little in the previous step).
 	Bash commands:
@@ -391,7 +391,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 
 	As you can see Glassfish is started with the user glassfish. It's always a bad idea to run a webserver with root. You should always use a restricted user - in our case this will be the user glassfish. You will learn how to use the script we just created in the next steps.
 
-5. Glassfish autostart: adding init script to default runlevels
+## 5. Glassfish autostart: adding init script to default runlevels
 
 	The init script is set up. Now we can add it to the default run levels. This way our Glassfish will startup whenever Ubuntu is restarted.
 	Bash commands:
@@ -425,7 +425,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 	/etc/init.d/glassfish restart
 	```
 
-6. Security configuration before first startup
+## 6. Security configuration before first startup
 
 	Even now we should not really use Glassfish in production. We will now begin the configuration of Glassfish itself. You should always run these steps, for example changing the default passwords, enabling https, changing the default ssl certificate to be used for https etc. We will also put our attention on Glassfish obfuscation.
 
@@ -446,7 +446,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 	The next step is to change the administration password with change-admin-password. Because this command is a remote command we need to ensure that Glassfish is running before we can execute the command. Since we want "automatic login" we will create an admin password file allowing us to login without being asked for credetials (it will be stored at /home/glassfish/.gfclient/pass).
 	
 	Bash commands:
-		
+
 	```
 	#change admin password
 	/home/glassfish/bin/asadmin change-admin-password
@@ -470,9 +470,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 
 	Glassfish is coming with a pre-configured certificate which is used for ssl (https). You can see it in the keystore.jks file if you check for the alias s1as. Since Glassfish 3.1 there is even another preconfigured certificate available: glassfish-instance. But that also means that everybody else can get these two certificates, the public keys, private keys, etc. With that information you could never be safe because "others" could "read" your data sent to Glassfish via https. That means you should always make sure to replace the pre-configured s1as and glassfish-instance entries in your keystore. But you should not delete them as long as the alias "s1as" and "glassfish-instance" are still in use (and it is by default in use for https...). I faced some strange behaviour as I did not think of that at the beginning when I simply deleted s1as - learn from my mistake and do not delete it for now... But we can help us with generating a new alias first (myAlias) and when ever needed or wanted we could change each occurrence of s1as to myAlias (i.e. via admin console) and then we could finally delete that s1as. The same has to be done also for glassfish-instance.
 
-	The following code box shows you the commands we need for modifying our Glassfish keystore. As you can see we first delete our pre-configured s1as entry (Glassfish mustn't be running!). Later a new s1as entry is generated - it is now unique for us! Similar steps have to be executed also for our second certificate (glassfish-instance).
-
-	Bash commands:
+	The following code box shows you the commands we need for modifying our Glassfish keystore. As you can see we first delete our pre-configured s1as entry (Glassfish mustn't be running!). Later a new s1as entry is generated - it is now unique for us! Similar steps have to be executed also for our second certificate (glassfish-instance). Bash commands:
 	
 	```
 	#create new certs
@@ -506,9 +504,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 	All JVM Options so far are optional. But at least adding -Dproduct.name="" is a good idea for everyone. If you would not add this then each http/https response will contain a header field like this: Server: GlassFish Server Open Source Edition 4.1
 	This is some great piece of information for hackers - that's why you should disable it. We don't want Glassfish to talk too much for security reasons!
 
-	We also don't want Glassfish to send a header similar to X-Powered-By: Servlet/3.1 JSP/2.3 (GlassFish Server Open Source Edition 4.1 Java/Oracle Corporation/1.8) because this is telling everyone we are using a Servlet 3.1 container and that we are (of course) using Java etc. So we have to disable sending x-powered-by in the http/https headers. After executing the commands below our Glassfish will run in silent mode - it is not telling too much any more. Glassfish obfuscation accomplished. SSLv3 and cient-initiated renegotiation will also be disabled, which reduces the surface for attacks.
-	
-	Bash commands:
+	We also don't want Glassfish to send a header similar to X-Powered-By: Servlet/3.1 JSP/2.3 (GlassFish Server Open Source Edition 4.1 Java/Oracle Corporation/1.8) because this is telling everyone we are using a Servlet 3.1 container and that we are (of course) using Java etc. So we have to disable sending x-powered-by in the http/https headers. After executing the commands below our Glassfish will run in silent mode - it is not telling too much any more. Glassfish obfuscation accomplished. SSLv3 and cient-initiated renegotiation will also be disabled, which reduces the surface for attacks. Bash commands:
 	
 	```
 	# the commands here change the file at
@@ -569,10 +565,9 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 	exit
 	```
 
-7. Run Glassfish
+## 7. Run Glassfish
 
-	Finally we have come to where we wanted. We have installed, secured and configured our Glassfish installation.
-	Bash commands:
+	Finally we have come to where we wanted. We have installed, secured and configured our Glassfish installation. Bash commands:
 
 	```
 	#starting glassfish
@@ -582,4 +577,9 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 	#update-rc.d -f glassfish remove
 	```
 
-	If you want a quick and free ssl security audit for your Glassfish server then go to Qualys SSL Labs and check your server configuration (the server must be accessible from the internet). I suggest every server available on the internet should use and even force HTTPS because it makes the web much safer. Even Google has announced to take HTTPS as a ranking signal. The "bad performance" argument is not really relevant anymore: TLS has exactly one performance problem: it is not used widely enough. Google gives you some good hints to Secure your site with HTTPS. Another good read is Ivan Ristić's paper: SSL/TLS Deployment Best Practices.
+	If you want a quick and free ssl security audit for your Glassfish server then go to [Qualys SSL Labs][4] and check your server configuration (the server must be accessible from the internet). I suggest every server available on the internet should use and even force HTTPS because it makes the web much safer. Even Google has announced to take HTTPS as a ranking signal. The "bad performance" argument is not really relevant anymore: [TLS has exactly one performance problem: it is not used widely enough][3]. Google gives you some good hints to [Secure your site with HTTPS][2]. Another good read is Ivan Ristić's paper: [SSL/TLS Deployment Best Practices][1].
+
+[1]: https://www.ssllabs.com/downloads/SSL_TLS_Deployment_Best_Practices.pdf
+[2]: https://support.google.com/webmasters/answer/6073543?utm_source=wmx_blog&utm_medium=referral&utm_campaign=tls_en_post
+[3]: https://istlsfastyet.com/?utm_source=wmx_blog&utm_medium=referral&utm_campaign=tls_en_post
+[4]: https://www.ssllabs.com/ssltest/analyze.html
