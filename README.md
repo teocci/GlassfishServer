@@ -62,7 +62,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 	File: [iptables.DISABLE_4848.rules](https://github.com/teocci/GlassfishServer/blob/master/scripts/iptables.DISABLE_4848.rules)
 
 	I suggest to create a file called `iptables.DISABLE_4848.rules` which contains exactly everything from the file `iptables.ENABLE_4848.rules` but with line 28 commented. Of course, you have to make both files executable with the command `chmod +x $filename` (see below). Then you can simply run one of the scripts when ever you want to disable or enable the AdminGUI on port 4848, for instance `sudo ./iptables.DISABLE_4848.rules`. Making the `iptables` rules executable:
-
+ 
 	```	
 	chmod +x iptables.DISABLE_4848.rules
 	chmod +x iptables.ENABLE_4848.rules
