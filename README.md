@@ -1,12 +1,11 @@
 # Installing Glassfish 4.1.1 on Ubuntu 14.04 LTS (from the command line)
-After my short tutorial [Web Application based on WebSocket API for Java](https://github.com/teocci/RealtimeBoard), I received a lot of emails asking about how to deploy a Glassfish server on Ubuntu from the command line.
-Therefore, in this tutorial I will explain how to install a Glassfish 4.1.1 Server on an Ubuntu 14.04 LTS Server. It will also cover **some but NOT all*** security concerns. The steps have been executed successfully on Ubuntu 14.04 LTS Server edition (64-bit). I have tested everything by using Physical Servers and Virtual Machines (you might want to use Virtual Machines as well). You can use this tutorial for setting up a Glassfish server. Both Ubuntu root servers and Ubuntu virtual servers should be fine for this tutorial, so you can choose any hosting package offered by the provider of your choice. In all cases you need to make sure to have root access to your server. Of course, in this tutorial you have to execute lots of commands on the shell, so you should also need to be familiar with the Unix/Linux command line. After having this tutorial completed you can use your new Glassfish installation to host your own Java EE 7 compliant applications.
+After my short tutorial [Web Application based on WebSocket API for Java](https://github.com/teocci/RealtimeBoard), I received a lot of emails asking me about How to install a Glassfish server on Ubuntu from the command line. Therefore, in this tutorial I will explain how to install a Glassfish 4.1.1 Server on an Ubuntu 14.04 LTS Server. I will also cover **some but NOT all*** security concerns. The steps have been executed successfully on Ubuntu 14.04 LTS Server edition (64-bit). You can use this tutorial for setting up a Glassfish server. I have tested everything by using Physical Servers and Virtual Machines, you can choose any hosting package offered by the provider of your choice. In all cases you need to make sure to have root access to your server. Of course, in this tutorial you have to execute lots of commands on the shell, so you should also need to be familiar with the Unix/Linux command line. After having this tutorial completed you can use your new Glassfish installation to host your own Java EE 7 [RealtimeBoard](https://github.com/teocci/RealtimeBoard) application.
 
-This is my tutorial where I described how to install Glassfish on Ubuntu. I hope it will help others and thank you for reading my tutorial! If you have any questions do not hesitate to contact me. Any feedback is welcome! Also feel free to leave a comment or an issue. For helping me to maintain my tutorials any donation is welcome.
+This is my first tutorial where I described how to install Glassfish on Ubuntu. So, I hope it will help others. Thanks for reading my tutorial, if you have any questions do not hesitate to contact me. Any feedback is welcome! Also feel free to leave comments or issues. For helping me to maintain my tutorials any donation is welcome. :)
 
 ## Table of contents:
 
-1. Setting up the OS environment
+1. Setting up the environment
 2. Setting up Java
 3. Downloading and installing Glassfish
 4. Setting up an init script
@@ -16,7 +15,7 @@ This is my tutorial where I described how to install Glassfish on Ubuntu. I hope
 
 Creating this tutorial meant a lot of effort - although I could reuse a lot of the work I invested into my previous tutorial. 
 
-## 1. Setting up the OS environment
+## 1. Setting up the environment
 
   Before you start doing anything you should think about a security concept. A -detailed security concept- is out of scope for this tutorial. Very important from security point of view is not to run your Glassfish server as `root`. This means you need to create a user with restricted rights which you can use for running Glassfish. Once you have added a new user, let's say 'gladmin', you might also want to add a new group called 'gf-admins'. You can use this group for all users that shall be allowed to "administer" your Glassfish in -full depth-. In full depth means also modifying different files in the Glassfish home directory. Below you find user and group related commands that you might want to use.
   Here are the commands:
