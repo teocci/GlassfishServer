@@ -25,32 +25,18 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 
 ## 1. Setting up the environment
 
-  Before you start doing anything you should think about a security concept. A -detailed security concept- is out of scope for this tutorial. Very important from security point of view is not to run your Glassfish server as `root`. This means you need to create a user with restricted rights which you can use for running Glassfish. Once you have added a new user, let's say 'gladmin', you might also want to add a new group called 'gf-admins'. You can use this group for all users that shall be allowed to "administer" your Glassfish in -full depth-. In full depth means also modifying different files in the Glassfish home directory. Below you find user and group related commands that you might want to use.
-  Here are the commands:
+  Before you start doing anything you should think about a security concept. A -detailed security concept- is out of scope for this tutorial. Very important from security point of view is not to run your Glassfish server as `root`. This means you need to create a user with restricted rights which you can use for running Glassfish. Once you have added a new user, let's say 'gladmin', you might also want to add a new group called 'gf-admins'. You can use this group for all users that shall be allowed to "administer" your Glassfish in -full depth-. In full depth means also modifying different files in the Glassfish home directory. Below you find user and group related commands that you might want to use. Here are the commands:
 
-  ```
-  sudo adduser --home /home/glassfish --system --shell /bin/bash glassfish
-  sudo groupadd glassfishadm
-  sudo usermod -a -G glassfishadm $myAdminUser
-  ``` 
-
-  *  Add a new user called glassfish: 
-
-  ```
-  sudo adduser --home /home/glassfish --system --shell /bin/bash glassfish
-  ```
-   
+  * Add a new user called glassfish: 
   * Add a new group for glassfish administration: 
-
-  ```
-  sudo groupadd glassfishadm
-  ``` 
-
   * Add your users that shall be Glassfish adminstrators: 
 
   ```
+  sudo adduser --home /home/glassfish --system --shell /bin/bash glassfish
+  sudo groupadd glassfishadm
   sudo usermod -a -G glassfishadm $myAdminUser
   ``` 
+
   * In case you want to delete a group some time later (ignore warnings):
 
   ```
@@ -248,14 +234,16 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   ls -lrt java*
   ```
 
-  SSL (Secure Sockets Layer) and TLS (Transport Layer Security) are protocols designed to help protect the privacy and integrity of data while it is being transferred across a network. SSLv3 (or simply SSL 3) is not safe anymore, that's why we will disable SSL in step 6. Security configuration before first startup (see below). However, if you run Glassfish with a standard JRE you will realize soon that only 128-bit ciphers suites are supported in your Glassfish. It is quite easy to enable cipher suites with more than 128-bit encryption, i.e. 256-bit AES. The restriction in Glassfish comes from the fact that Glassfish uses what ever is supported by the underlying JSSE. To enable 256-bit cipher suites we need to download the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files 8 and copy them to /usr/local/jdk1.8.0/jre/lib/security/ (all Java gurus should know that step very well). The following commands assume that you have downloaded the JCE archive with a browser to your local machine and saved it to ~/Downloads:
+  SSL (Secure Sockets Layer) and TLS (Transport Layer Security) are protocols designed to help protect the privacy and integrity of data while it is being transferred across a network. SSLv3 (or simply SSL 3) is not safe anymore, that's why we will disable SSL in step [6. Security configuration before first startup][0.6] (see below). However, if you run Glassfish with a standard JRE you will realize soon that only 128-bit ciphers suites are supported in your Glassfish. It is quite easy to enable cipher suites with more than 128-bit encryption, i.e. 256-bit AES. The restriction in Glassfish comes from the fact that Glassfish uses what ever is supported by the underlying JSSE. To enable 256-bit cipher suites we need to download [the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files 8][2.0] and copy them to /usr/local/jdk1.8.0/jre/lib/security/ (all Java gurus should know that step very well). The following commands assume that you have downloaded the JCE archive with a browser to your local machine and saved it to ~/Downloads:
   Bash commands for enabling Java Cryptography Extension (JCE) Unlimited Strength:
 
   ```
-  #upload jce to ubuntu server via scp (assuming you have scp, else upload somehow else...)
-  #(replace myuser with your ubuntu user and ipAddressOfUbuntuServer with the ip address of you ubuntu server)
-  scp ~/Downloads/jce_policy-8.zip myuser@ipAddressOfUbuntuServer:downloads
-  #now the archive is on the ubuntu server at /home/myuser/downloads
+  #if you dont't have "unzip" installed run this here first
+  sudo apt-get install unzip
+
+  #download and unzip the jce to the ubuntu server
+  wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jce/8/jce_policy-8.zip
+  unzip jce_policy-8.zip
    
   #now we execute the next commands on the ubuntu server
   #first, backup old files
@@ -263,8 +251,6 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   sudo mv /usr/local/jdk1.8.0/jre/lib/security/US_export_policy.jar /usr/local/jdk1.8.0/jre/lib/security/US_export_policy.jar.bak
    
   #now copy local_policy.jar and US_export_policy.jar to /usr/local/jdk1.8.0/jre/lib/security/
-  cd ~/downloads
-  sudo unzip ./jce_policy-8.zip
   sudo cp ./UnlimitedJCEPolicyJDK8/local_policy.jar /usr/local/jdk1.8.0/jre/lib/security/
   sudo cp ./UnlimitedJCEPolicyJDK8/US_export_policy.jar /usr/local/jdk1.8.0/jre/lib/security/
   sudo chgrp -R root /usr/local/jdk1.8.0/jre/lib/security
@@ -285,6 +271,9 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   #also add this because of Logjam attack:
   jdk.tls.ephemeralDHKeySize=2048
   ```
+
+  [2.0]: http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
+
 ## 3. Downloading and Installing Glassfish
 
   Now we can download Glassfish. I suggest to switch the user now to glassfish, which we have created in the first step. We want to download the Glassfish zip installation file to /home/glassfish/downloads/. Afterwards the zip file has to be extracted and the content can be moved to /home/glassfish/ - this is everything needed for installing Glassfish. Usually the zip file is extracted to a directory called ./glassfish4/. Make sure to move the content of ./glassfish4/ and not ./glassfish4 itself to /home/glassfish/.
