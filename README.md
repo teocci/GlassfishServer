@@ -5,13 +5,21 @@ This is my first tutorial where I described how to install Glassfish on Ubuntu. 
 
 ## Table of contents:
 
-1. Setting up the environment
-2. Setting up Java
-3. Downloading and installing Glassfish
-4. Setting up an init script
-5. Glassfish autostart: adding init script to default runlevels
-6. Security configuration before first startup
-7. Run Glassfish
+1. [Setting up the environment][0.1]
+2. [Setting up Java][0.2]
+3. [Downloading and installing Glassfish][0.3]
+4. [Setting up an init script][0.4]
+5. [Glassfish autostart: adding init script to default runlevels][0.5]
+6. [Security configuration before first startup][0.6]
+7. [Run Glassfish][0.7]
+
+[0.1]: #1-setting-up-the-environment
+[0.2]: #2-setting-up-java
+[0.3]: #3-downloading-and-installing-glassfish
+[0.4]: #4-setting-up-an-init-script
+[0.5]: #5-glassfish-autostart-adding-init-script-to-default-runlevels
+[0.6]: #6-security-configuration-before-first-startup
+[0.7]: #7-run-glassfish
 
 Creating this tutorial meant a lot of effort - although I could reuse a lot of the work I invested into my previous tutorial. 
 
@@ -159,10 +167,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
    
   #remove previous installations if available
   sudo rm -rf /usr/local/jdk1.8.0
-   
-  #make sure our destination folder exists
-  sudo mkdir /usr/lib/jvm
-   
+     
   #move extracted files
   sudo mv ./jdk1.8.0_101 /usr/local/jdk1.8.0
   sudo chgrp -R root /usr/local/jdk1.8.0
