@@ -1,0 +1,60 @@
+#!/bin/bash
+ 
+# ATTENTION: flush/delete all existing rules
+iptables -F
+ 
+################################################################
+# set the default policy for each of the pre-defined chains
+################################################################
+iptables -P INPUT ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD DROP
+ 
+# allow establishment of connections initialised by my outgoing packets
+iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+ 
+# accept anything on localhost
+iptables -A INPUT -i lo -j ACCEPT
+ 
+################################################################
+#individual ports tcp
+################################################################
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+iptables -A INPUT -p tcp --dport 8181 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+ 
+################################################################
+#slow down the amount of ssh connections by the same ip address:
+#wait 60 seconds if 3 times failed to connect
+################################################################
+iptables -I INPUT -p tcp -i eth0 --dport 22 -m state --state NEW -m recent --name sshprobe --set -j ACCEPT
+iptables -I INPUT -p tcp -i eth0 --dport 22 -m state --state NEW -m recent --name sshprobe --update --seconds 60 --hitcount 3 --rttl -j DROP
+ 
+#drop everything else
+iptables -A INPUT -j DROP
+ 
+################################################################
+#Redirection Rules
+################################################################
+#1. redirection rules (allowing forwarding from localhost)
+iptables -t nat -A OUTPUT -o lo -p tcp --dport 80 -j REDIRECT --to-port 8080
+iptables -t nat -A OUTPUT -o lo -p tcp --dport 443 -j REDIRECT --to-port 8181
+ 
+#2. redirection http
+iptables -t nat -A PREROUTING -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 8080
+ 
+#3. redirection https
+iptables -t nat -A PREROUTING -p tcp -m tcp --dport 443 -j REDIRECT --to-ports 8181
+ 
+ 
+################################################################
+#save the rules somewhere and make sure
+#our rules get loaded if the ubuntu server is restarted
+################################################################
+iptables-save > /etc/my-iptables.rules
+iptables-restore < /etc/my-iptables.rules
+ 
+#List Rules to see what we have now
+iptables -L
