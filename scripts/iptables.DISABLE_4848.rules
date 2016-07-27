@@ -24,6 +24,8 @@ iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
 iptables -A INPUT -p tcp --dport 8181 -j ACCEPT
 iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+#uncomment next line to enable AdminGUI on port 4848:
+#iptables -A INPUT -p tcp --dport 4848 -j ACCEPT
  
 ################################################################
 #slow down the amount of ssh connections by the same ip address:
