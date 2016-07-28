@@ -355,7 +355,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 
   ```  
   #create and edit file
-  sudo vi /etc/init.d/glassfish
+  sudo nano /etc/init.d/glassfish
    
   #(paste the lines below into the file and save it...):
    
@@ -387,7 +387,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   :
   ```
 
-  As you can see Glassfish is started with the user glassfish. It's always a bad idea to run a webserver with root. You should always use a restricted user - in our case this will be the user glassfish. You will learn how to use the script we just created in the next steps.
+  As you can see Glassfish is started with the user gladmin. It's always a bad idea to run a webserver with root. You should always use a restricted user - in our case this will be the user gladmin. You will learn how to use the script we just created in the next steps.
 
 ## 5. Glassfish autostart: adding init script to default runlevels
 
