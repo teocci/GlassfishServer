@@ -1,0 +1,26 @@
+#! /bin/sh
+
+#to prevent some possible problems
+export AS_JAVA=/usr/local/jdk1.8.0
+
+GLASSFISHPATH=/home/glassfish/bin
+
+case "$1" in
+start)
+echo "starting glassfish from $GLASSFISHPATH"
+sudo -u gladmin $GLASSFISHPATH/asadmin start-domain domain1
+;;
+restart)
+$0 stop
+$0 start
+;;
+stop)
+echo "stopping glassfish from $GLASSFISHPATH"
+sudo -u gladmin $GLASSFISHPATH/asadmin stop-domain domain1
+;;
+*)
+echo $"usage: $0 {start|stop|restart}"
+exit 3
+;;
+esac
+:
