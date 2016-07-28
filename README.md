@@ -1,5 +1,5 @@
 # Installing Glassfish 4.1.1 on Ubuntu 16.04 LTS and Ubuntu 14.04 LTS (from the command line)
-After my short tutorial [Web Application based on WebSocket API for Java](https://github.com/teocci/RealtimeBoard), I received a lot of emails asking me about How to install a Glassfish server on Ubuntu from the command line. Therefore, in this tutorial I will explain how to install a Glassfish 4.1.1 Server on an Ubuntu 14.04 LTS Server. I will also cover **some but NOT all*** security concerns. The steps have been executed successfully on `Ubuntu 16.04 LTS Server edition (64-bit)` and `Ubuntu 14.04 LTS Server edition (64-bit)`. You can use this tutorial for setting up a Glassfish server. I have tested everything by using Physical Servers and Virtual Machines, you can choose any hosting package offered by the provider of your choice. In all cases you need to make sure to have root access to your server. Of course, in this tutorial you have to execute lots of commands on the shell, so you should also need to be familiar with the Unix/Linux command line. After having this tutorial completed you can use your new Glassfish installation to host your own Java EE 7 [RealtimeBoard](https://github.com/teocci/RealtimeBoard) application.
+After my short tutorial [Web Application based on WebSocket API for Java](https://github.com/teocci/RealtimeBoard), I received a lot of emails asking me about How to install a Glassfish server on Ubuntu from the command line. Therefore, in this tutorial I will explain how to install a Glassfish 4.1.1 Server on an Ubuntu 14.04 LTS Server. I will also cover **some but NOT all** security concerns. The steps have been executed successfully on `Ubuntu 16.04 LTS Server edition (64-bit)` and `Ubuntu 14.04 LTS Server edition (64-bit)`. You can use this tutorial for setting up a Glassfish server. I have tested everything by using Physical Servers and Virtual Machines, you can choose any hosting package offered by the provider of your choice. In all cases you need to make sure to have root access to your server. Of course, in this tutorial you have to execute lots of commands on the shell, so you should also need to be familiar with the Unix/Linux command line. After having this tutorial completed you can use your new Glassfish installation to host your own Java EE 7 [RealtimeBoard](https://github.com/teocci/RealtimeBoard) application.
 
 This is my first tutorial where I described how to install Glassfish on Ubuntu. So, I hope it will help others. Thanks for reading my tutorial, if you have any questions do not hesitate to contact me. Any feedback is welcome! Also feel free to leave comments or issues. For helping me to maintain my tutorials any donation is welcome. :)
 
@@ -27,20 +27,18 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 
   Before you start doing anything you should think about a security concept. A -detailed security concept- is out of scope for this tutorial. Very important from security point of view is not to run your Glassfish server as `root`. This means you need to create a user with restricted rights which you can use for running Glassfish. Once you have added a new user, let's say 'gladmin', you might also want to add a new group called 'gf-admins'. You can use this group for all users that shall be allowed to "administer" your Glassfish in -full depth-. In full depth means also modifying different files in the Glassfish home directory. Below you find user and group related commands that you might want to use. Here are the commands:
 
-  * Add a new user called gladmin: 
-  * Add a new group for glassfish administration: 
-  * Add your users that shall be Glassfish adminstrators: 
-
   ```
+  #Add a new user called gladmin
   sudo adduser --home /home/glassfish --system --shell /bin/bash gladmin
+   
+  #add a new group for glassfish administration
   sudo groupadd gf-admins
+   
+  #add your users that shall be Glassfish adminstrators
   sudo usermod -a -G gf-admins gladmin
-  ``` 
-
-  * In case you want to delete a group some time later (ignore warnings):
-
-  ```
-  delgroup gf-admins
+   
+  #in case you want to delete a group some time later (ignore warnings):
+  #delgroup gf-admins
   ```
 
   Glassfish allows some of the configuration tasks to be managed via a web based Administration GUI. We will simply call it "Admin GUI" from now on. You can reach the Admin GUI by visiting http://www.yourserver.com:4848/ in your browser (please replace www.yourserver.com with localhost or where ever your Glassfish server is). As you can see port 4848 is used. Of course, we don't want anyone to access our AdminGUI. Therefore we have to restrict access to the AdimnGUI. A way do this is to block port 4848 via the firewall. Anything you can do via AdminGUI is also available via the asadmin tool that ships with Glassfish. So you don't have to worry about not being able to configure Glassfish if you block the AdminGUI.
@@ -52,6 +50,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   Now we have created a lot of rules. You could enter them always one by one, but we don't want this kind of effort. I suggest to enter the following `iptables` rules in a separate file which contains all of our `iptables` related ideas we discussed so far:
 
   File: [iptables.ENABLE_4848.rules][1.1]
+
   File: [iptables.DISABLE_4848.rules][1.2]
 
   I suggest to create a file called `iptables.DISABLE_4848.rules` which contains exactly everything from the file `iptables.ENABLE_4848.rules` but with line 28 commented. Of course, you have to make both files executable with the command `chmod +x $filename` (see below). Then you can simply run one of the scripts when ever you want to disable or enable the AdminGUI on port 4848, for instance `sudo ./iptables.DISABLE_4848.rules`. Making the `iptables` rules executable:
@@ -341,11 +340,11 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   sudo su gladmin
    
   #start glassfish
-  /home/glassfish/bin/asadmin start-domain domain1
+  asadmin start-domain domain1
   #check the output...
    
   #stop glassfish
-  /home/glassfish/bin/asadmin stop-domain domain1
+  asadmin stop-domain domain1
   #check the output...
    
   #exit from gladmin user
@@ -452,16 +451,17 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   asadmin start-domain domain1
 
   #login for automatic login...
-  /home/glassfish/bin/asadmin login
+  asadmin login
   #prompt:
   #user = admin
   #password = myAdminPwd
   #==> stores file to /home/glassfish/.gfclient/pass
 
-  #if you are using the iptables.ENABLE_4848.rules uncomment this section
+  #enable https for remote access to admin console using the iptables.ENABLE_4848.rules uncomment this section
+
+  #requests to http://xxx:4848 are redirected to https://xxx:4848
   #asadmin enable-secure-admin
   #asadmin restart-domain domain1
-  #try to login using the https://yourdomain.com:4848/
   #user = admin
   #password = myAdminPwd
 
@@ -499,11 +499,11 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   rm glassfish-instance.cert s1as.cert
   ```
 
-  Now we want to enable `https` for the admin console. Once we have done that we can be sure that nobody can listen to our data sent via `https` because nobody else has our certificates, i.e. nobody can decrypt our password used for entering the admin console via browser (in case someone cought our data packages). However, sometimes clients want to connect via `https` using `SSLv3`, which is considered to be vulnerable nowadays. In other words: **disable SSLv3 completely where ever you find it - no discussion about that allowed!** 
+  Now we want to enable `https` for the admin console. Once we have done that we can be sure that nobody can listen to our data sent via `https` because nobody else has our certificates, i.e. nobody can decrypt our password used for entering the admin console via browser (in case someone cough our data packages). However, sometimes clients want to connect via `https` using `SSLv3`, which is considered to be vulnerable nowadays. In other words: **disable SSLv3 completely where ever you find it - no discussion about that allowed!** 
 
   Here is a great post about [different ways of disabling SSLv3 in Glassfish 4.1][6.5]. I recommend use the command line version (`asadmin`). Furthermore, it seems that Glassfish 4.1.1 does not disable TLS client-initiated renegotiation by default, which is considered to open some doors for DoS attacks. The article [TLS Renegotiation and Denial of Service Attacks][6.4] by Ivan Ristic is a good read. For us this means we need to disable client-initiated renegotiation somehow. But this is not all we want to do here. We want to change some of the default JVM Options and we want to make our Glassfish not telling too much ("obfuscation").
 
-  The first JVM Option we will change is replacing the `-client` option with the `-server` option. I expect the java option `-server` to be the better choice when it comes to performance. I have also decided to change `-Xmx512m` (Glassfish default) to a higher value: `-Xmx4096m`. Additionally, I have added `-Xms4096m`. Furthermore, we will remove `-XX:MaxPermSize=192m` and replace it with `-XX:MaxMetaspaceSize=512m` because [`-XX:MaxPermSize` was deprecated in JDK 8][6.3]. If you want to find out more about it then have a look at [this InfoQ article][6.2]. For more information about JVM options please check the [Oracle's official documentation][6.1].
+  The first JVM Option we will change is replacing the `-client` option with the `-server` option. I expect the java option `-server` to be the better choice when it comes to performance. I have also decided to change `-Xmx512m` (Glassfish default) to a higher value `-Xmx4096m` also I have added `-Xms4096m`. Furthermore, we will remove `-XX:MaxPermSize=192m` and replace it with `-XX:MaxMetaspaceSize=512m` because [`-XX:MaxPermSize` was deprecated in JDK 8][6.3]. If you want to find out more about it then have a look at [this InfoQ article][6.2]. For more information about JVM options please check the [Oracle's official documentation][6.1].
   All JVM Options so far are optional. But at least adding `-Dproduct.name=""` is a good idea for everyone. If you would not add this then each http/https response will contain a header field like this: **Server: GlassFish Server Open Source Edition 4.1**
   This is some great piece of information for hackers - that's why you should disable it. We don't want Glassfish to talk too much for security reasons!
 
@@ -521,55 +521,55 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   # /home/glassfish/glassfish/domains/domain1/config/domain.xml
 
   #first we have to start Glassfish
-  /home/glassfish/bin/asadmin start-domain domain1
+  asadmin start-domain domain1
 
   # enable https for remote access to admin console
   # requests to http://xxx:4848 are redirected to https://xxx:4848
-  /home/glassfish/bin/asadmin enable-secure-admin
+  asadmin enable-secure-admin
 
   #change JVM Options
   #list current jvm options
-  /home/glassfish/bin/asadmin list-jvm-options
+  asadmin list-jvm-options
   #now start setting some important jvm settings (change this as you wish)
-  /home/glassfish/bin/asadmin delete-jvm-options -- -client
-  /home/glassfish/bin/asadmin create-jvm-options -- -server
+  asadmin delete-jvm-options -- -client
+  asadmin create-jvm-options -- -server
   #For server deployments, -Xms and -Xmx are often set to the same value
-  /home/glassfish/bin/asadmin delete-jvm-options -- -Xmx512m
-  /home/glassfish/bin/asadmin create-jvm-options -- -Xms4096m
-  /home/glassfish/bin/asadmin create-jvm-options -- -Xmx4096m
+  asadmin delete-jvm-options -- -Xmx512m
+  asadmin create-jvm-options -- -Xms4096m
+  asadmin create-jvm-options -- -Xmx4096m
 
   #-XX:MaxPermSize was deprecated in JDK 8, and superseded by the -XX:MaxMetaspaceSize option, see http://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html
   # see also this good article: http://www.infoq.com/articles/Java-PERMGEN-Removed
-  /home/glassfish/bin/asadmin delete-jvm-options '-XX\:MaxPermSize=192m'
-  /home/glassfish/bin/asadmin create-jvm-options -- '-XX\:MaxMetaspaceSize=512m'
-  /home/glassfish/bin/asadmin create-jvm-options -- '-XX\:MetaspaceSize=512m'
+  asadmin delete-jvm-options '-XX\:MaxPermSize=192m'
+  asadmin create-jvm-options -- '-XX\:MaxMetaspaceSize=512m'
+  asadmin create-jvm-options -- '-XX\:MetaspaceSize=512m'
 
   #disable client-initiated renegotiation (to decrease the surface for DoS attacks)
-  /home/glassfish/bin/asadmin create-jvm-options -Djdk.tls.rejectClientInitiatedRenegotiation=true
+  asadmin create-jvm-options -Djdk.tls.rejectClientInitiatedRenegotiation=true
 
   #get rid of http header field value "server" (Glassfish obfuscation)
-  /home/glassfish/bin/asadmin create-jvm-options -Dproduct.name=""
+  asadmin create-jvm-options -Dproduct.name=""
 
   #disable sending x-powered-by in http header (Glassfish obfuscation)
-  /home/glassfish/bin/asadmin set server.network-config.protocols.protocol.http-listener-1.http.xpowered-by=false
-  /home/glassfish/bin/asadmin set server.network-config.protocols.protocol.http-listener-2.http.xpowered-by=false
-  /home/glassfish/bin/asadmin set server.network-config.protocols.protocol.admin-listener.http.xpowered-by=false
-  /home/glassfish/bin/asadmin set server.network-config.protocols.protocol.sec-admin-listener.http.xpowered-by=false
+  asadmin set server.network-config.protocols.protocol.http-listener-1.http.xpowered-by=false
+  asadmin set server.network-config.protocols.protocol.http-listener-2.http.xpowered-by=false
+  asadmin set server.network-config.protocols.protocol.admin-listener.http.xpowered-by=false
+  asadmin set server.network-config.protocols.protocol.sec-admin-listener.http.xpowered-by=false
 
   #optional: let's disable autodeploy (via autodeploy folder)
-  /home/glassfish/bin/asadmin set server.admin-service.das-config.autodeploy-enabled=false
+  asadmin set server.admin-service.das-config.autodeploy-enabled=false
 
   #disable SSLv3
-  /home/glassfish/bin/asadmin set server.network-config.protocols.protocol.http-listener-2.ssl.ssl3-enabled=false
-  /home/glassfish/bin/asadmin set server.network-config.protocols.protocol.sec-admin-listener.ssl.ssl3-enabled=false
-  /home/glassfish/bin/asadmin set server.iiop-service.iiop-listener.SSL.ssl.ssl3-enabled=false
-  /home/glassfish/bin/asadmin set server.iiop-service.iiop-listener.SSL_MUTUALAUTH.ssl.ssl3-enabled=false
+  asadmin set server.network-config.protocols.protocol.http-listener-2.ssl.ssl3-enabled=false
+  asadmin set server.network-config.protocols.protocol.sec-admin-listener.ssl.ssl3-enabled=false
+  asadmin set server.iiop-service.iiop-listener.SSL.ssl.ssl3-enabled=false
+  asadmin set server.iiop-service.iiop-listener.SSL_MUTUALAUTH.ssl.ssl3-enabled=false
 
   #restart to take effect
-  /home/glassfish/bin/asadmin stop-domain domain1
-  /home/glassfish/bin/asadmin start-domain domain1
+  asadmin stop-domain domain1
+  asadmin start-domain domain1
   #what jvm options are configured now?
-  /home/glassfish/bin/asadmin list-jvm-options
+  asadmin list-jvm-options
 
   #we are done with user glassfish
   exit
