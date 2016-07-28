@@ -27,20 +27,20 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 
   Before you start doing anything you should think about a security concept. A -detailed security concept- is out of scope for this tutorial. Very important from security point of view is not to run your Glassfish server as `root`. This means you need to create a user with restricted rights which you can use for running Glassfish. Once you have added a new user, let's say 'gladmin', you might also want to add a new group called 'gf-admins'. You can use this group for all users that shall be allowed to "administer" your Glassfish in -full depth-. In full depth means also modifying different files in the Glassfish home directory. Below you find user and group related commands that you might want to use. Here are the commands:
 
-  * Add a new user called glassfish: 
+  * Add a new user called gladmin: 
   * Add a new group for glassfish administration: 
   * Add your users that shall be Glassfish adminstrators: 
 
   ```
-  sudo adduser --home /home/glassfish --system --shell /bin/bash glassfish
-  sudo groupadd glassfishadm
-  sudo usermod -a -G glassfishadm $myAdminUser
+  sudo adduser --home /home/glassfish --system --shell /bin/bash gladmin
+  sudo groupadd gf-admins
+  sudo usermod -a -G gf-admins gladmin
   ``` 
 
   * In case you want to delete a group some time later (ignore warnings):
 
   ```
-  delgroup glassfishadm
+  delgroup gf-admins
   ```
 
   Glassfish allows some of the configuration tasks to be managed via a web based Administration GUI. We will simply call it "Admin GUI" from now on. You can reach the Admin GUI by visiting http://www.yourserver.com:4848/ in your browser (please replace www.yourserver.com with localhost or where ever your Glassfish server is). As you can see port 4848 is used. Of course, we don't want anyone to access our AdminGUI. Therefore we have to restrict access to the AdimnGUI. A way do this is to block port 4848 via the firewall. Anything you can do via AdminGUI is also available via the asadmin tool that ships with Glassfish. So you don't have to worry about not being able to configure Glassfish if you block the AdminGUI.
@@ -127,9 +127,9 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 
 ## 2. Setting up Java
 
-  The next step is to set up Java. As you can see on [the official Oracle Glassfish 4.1.1 download site](http://download.java.net/glassfish/4.1.1/release/glassfish-4.1.1.zip) it is recommended to use the latest Oracle JDK 8 for GlassFish 4.1. On the other hand you can see that Java EE 7 requires at least JDK 7 or above. That means these are the minimum versions you want to use! I suggest to remove the ObenJDK first if you have it installed and install the Oracle JDK and JRE. I also suggest to remove any previous Sun/Oracle JDK and JRE already installed on your system. On a production system I don't suggest to use the ObenJDK because it is not certified (but that's another story...).
+  The next step is to set up Java. As you can see on [the official Oracle Glassfish 4.1.1 download site][2.1] it is recommended to use the latest Oracle JDK 8 for GlassFish 4.1.1. On the other hand you can see that Java EE 7 requires at least JDK 7 or above. That means these are the minimum versions you want to use! I suggest to remove the ObenJDK first if you have it installed and install the Oracle JDK and JRE. I also suggest to remove any previous Sun/Oracle JDK and JRE already installed on your system. On a production system I don't suggest to use the ObenJDK because it is not certified (but that's another story...).
 
-  So what we want now is to install the latest JDK 8 from Oracle. Unfortunately Oracle's JDK 8 is not available via Ubuntu's aptitude. So if you want to install Oracles's JDK 8 you will have to download the Linux distribution from [Oracle's JDK 8 Download site](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) and install it manually. Installing Oracle's JDK 8 manually means downloading it manually, uploading it manually to your Ubuntu server and the executing the actual installation process. See [How can I install Sun/Oracle's proprietary Java JDK 6/7/8 or JRE?](http://askubuntu.com/questions/56104/how-can-i-install-sun-oracles-proprietary-java-jdk-6-7-8-or-jre) on askubuntu.com for more information. The following commands expect that you have already downloaded Oracle's JDK 8 (i.e. jdk-8u101-linux-x64.tar.gz) manually to your local machine (i.e. by the browser of your choice) and that the same file has been uploaded to ~/downloads on your Ubuntu server (i.e. via scp).
+  So what we want now is to install the latest JDK 8 from Oracle. Unfortunately Oracle's JDK 8 is not available via Ubuntu's aptitude. So if you want to install Oracles's JDK 8 you will have to download the Linux distribution from [Oracle's JDK 8 Download site][2.2] and install it manually. Installing Oracle's JDK 8 manually means downloading it manually, uploading it manually to your Ubuntu server and the executing the actual installation process. See [How can I install Sun/Oracle's proprietary Java JDK 6/7/8 or JRE?][2.3] on askubuntu.com for more information. The following commands will download the version 101 of the Oracle's JDK ([jdk-8u101-linux-x64.tar.gz][2.4]).
 
   Bash commands (Ubuntu 14.04 LTS):
 
@@ -234,8 +234,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   ls -lrt java*
   ```
 
-  SSL (Secure Sockets Layer) and TLS (Transport Layer Security) are protocols designed to help protect the privacy and integrity of data while it is being transferred across a network. SSLv3 (or simply SSL 3) is not safe anymore, that's why we will disable SSL in step [6. Security configuration before first startup][0.6] (see below). However, if you run Glassfish with a standard JRE you will realize soon that only 128-bit ciphers suites are supported in your Glassfish. It is quite easy to enable cipher suites with more than 128-bit encryption, i.e. 256-bit AES. The restriction in Glassfish comes from the fact that Glassfish uses what ever is supported by the underlying JSSE. To enable 256-bit cipher suites we need to download [the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files 8][2.0] and copy them to /usr/local/jdk1.8.0/jre/lib/security/ (all Java gurus should know that step very well). The following commands assume that you have downloaded the JCE archive with a browser to your local machine and saved it to ~/Downloads:
-  Bash commands for enabling Java Cryptography Extension (JCE) Unlimited Strength:
+  SSL (Secure Sockets Layer) and TLS (Transport Layer Security) are protocols designed to help protect the privacy and integrity of data while it is being transferred across a network. SSLv3 (or simply SSL 3) is not safe anymore, that's why we will disable SSL in step [6. Security configuration before first startup][0.6] (see below). However, if you run Glassfish with a standard JRE you will realize soon that only 128-bit ciphers suites are supported in your Glassfish. It is quite easy to enable cipher suites with more than 128-bit encryption, i.e. 256-bit AES. The restriction in Glassfish comes from the fact that Glassfish uses what ever is supported by [the underlying JSSE][2.5]. To enable 256-bit cipher suites we need to download [the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files 8][2.6] and copy them to `/usr/local/jdk1.8.0/jre/lib/security/`. Here are the commands for enabling Java Cryptography Extension (JCE) Unlimited Strength:
 
   ```
   #if you dont't have "unzip" installed run this here first
@@ -257,9 +256,9 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   sudo chown -R root /usr/local/jdk1.8.0/jre/lib/security
   ```
 
-  Now Glassfish will be allowed to offer even AES-256. You could also allow only a certain set of cipher suites by changing the settings of your Http Listeners and IIOP Listeners in the admin console or via asadmin later, once Glassfish is installed. If you are interested to learn more about security I suggest to read 256-bit AES Encryption for SSL and TLS: Maximal Security. This paper also tells you how to force certain ciphers in different browsers. However, to be very sure in risky environments, it's a good decision to force a certain set of allowed ciphers directly on your Glassfish server (we will not focus too much on that).
+  Now Glassfish will be allowed to offer even AES-256. You could also allow only a certain set of cipher suites by changing the settings of your Http Listeners and IIOP Listeners in the admin console or via asadmin later, once Glassfish is installed. If you are interested to learn more about security I suggest to read [256-bit AES Encryption for SSL and TLS: Maximal Security][2.7]. This paper also tells you how to force certain ciphers in different browsers. However, to be very sure in risky environments, it's a good decision to force a certain set of allowed ciphers directly on your Glassfish server (we will not focus on that).
 
-  A few days ago the Internet Engineering Task Force (IETF) has announced with Request for Comment 7465 to prohibit RC4 Cipher Suites in TLS. RC4 is considered to be very weak and insecure, so let's follow RFC 7465 and disable RC4. You could do this directly in Glassfish via the admin console or asadmin CLI. However, I believe it's a better idea to do this globally in your JRE. The following configuration will make sure that your Glassfish server will not use any RC4-based cipher suites (not disabling RC4 is a risk these days):
+  A few days ago the Internet Engineering Task Force (IETF) has announced with [Request for Comment 7465][2.8] to prohibit RC4 Cipher Suites in TLS. RC4 is considered to be very weak and insecure, so let's follow RFC 7465 and disable RC4. You could do this directly in Glassfish via the admin console or asadmin CLI. However, I believe it's a better idea to do this globally in your JRE. The following configuration will make sure that your Glassfish server will not use any RC4-based cipher suites (not disabling RC4 is a risk these days):
   Disable weak ciphers globally, i.e. RC4:
 
   ```
@@ -272,19 +271,26 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   jdk.tls.ephemeralDHKeySize=2048
   ```
 
-  [2.0]: http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
+  [2.1]: http://download.java.net/glassfish/4.1.1/release/glassfish-4.1.1.zip
+  [2.2]: http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+  [2.3]: http://askubuntu.com/questions/56104/how-can-i-install-sun-oracles-proprietary-java-jdk-6-7-8-or-jre
+  [2.4]: http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.tar.gz
+  [2.5]: http://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html
+  [2.6]: http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
+  [2.7]: https://luxsci.com/blog/256-bit-aes-encryption-for-ssl-and-tls-maximal-security.html
+  [2.8]: https://tools.ietf.org/html/rfc7465
 
 ## 3. Downloading and Installing Glassfish
 
-  Now we can download Glassfish. I suggest to switch the user now to glassfish, which we have created in the first step. We want to download the Glassfish zip installation file to /home/glassfish/downloads/. Afterwards the zip file has to be extracted and the content can be moved to /home/glassfish/ - this is everything needed for installing Glassfish. Usually the zip file is extracted to a directory called ./glassfish4/. Make sure to move the content of ./glassfish4/ and not ./glassfish4 itself to /home/glassfish/.
+  Now we can download Glassfish. I suggest to switch the user now to glassfish, which we have created in the first step. We want to download the Glassfish zip installation file to `/home/glassfish/downloads/`. Afterwards the zip file has to be extracted and the content can be moved to `/home/glassfish/` - this is everything needed for installing Glassfish. Usually the zip file is extracted to a directory called `./glassfish4/`. Make sure to move the content of `./glassfish4/` and not `./glassfish4` itself to `/home/glassfish/`.
   Here are the commands:
 
   ```  
   #if you dont't have "unzip" installed run this here first
   sudo apt-get install unzip
    
-  #now switch user to the glassfish user we created (see step 1)
-  sudo su glassfish
+  #now switch user to the gladmin user we created (see step 1)
+  sudo su gladmin
    
   #change to home dir of glassfish
   cd /home/glassfish/
@@ -297,8 +303,8 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
    
   #download Glassfish and unzip
   #Hint: get the correct link from  https://glassfish.java.net/download.html if wget fails
-  wget http://download.java.net/glassfish/4.1/release/glassfish-4.1.zip
-  unzip glassfish-4.1.zip
+  wget http://download.oracle.com/glassfish/4.1.1/release/glassfish-4.1.1.zip
+  unzip glassfish-4.1.1.zip
    
    
   #move the relevant content to home directory
@@ -306,14 +312,14 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   #if something has not been moved, then move it manually, i.e.:
   mv /home/glassfish/downloads/glassfish4/.org.opensolaris,pkg /home/glassfish/.org.opensolaris,pkg
    
-  #exit from glassfish user
+  #exit from gladmin user
   exit
    
-  #change group of glassfish home directory to glassfishadm
-  sudo chgrp -R glassfishadm /home/glassfish
+  #change group of glassfish home directory to gf-admins
+  sudo chgrp -R gf-admins /home/glassfish
    
   #just to make sure: change owner of glassfish home directory to glassfish
-  sudo chown -R glassfish /home/glassfish
+  sudo chown -R v /home/glassfish
    
   #make sure the relevant files are executable/modifyable/readable for owner and group
   sudo chmod -R ug+rwx /home/glassfish/bin/
@@ -328,8 +334,8 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   Here are the commands:
 
   ```  
-  #now switch user to the glassfish user
-  sudo su glassfish
+  #now switch user to the gladmin user
+  sudo su gladmin
    
   #start glassfish
   /home/glassfish/bin/asadmin start-domain domain1
@@ -339,7 +345,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   /home/glassfish/bin/asadmin stop-domain domain1
   #check the output...
    
-  #exit from glassfish user
+  #exit from gladmin user
   exit
   ```
 
@@ -363,7 +369,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   case "$1" in
   start)
   echo "starting glassfish from $GLASSFISHPATH"
-  sudo -u glassfish $GLASSFISHPATH/asadmin start-domain domain1
+  sudo -u gladmin $GLASSFISHPATH/asadmin start-domain domain1
   ;;
   restart)
   $0 stop
@@ -371,7 +377,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   ;;
   stop)
   echo "stopping glassfish from $GLASSFISHPATH"
-  sudo -u glassfish $GLASSFISHPATH/asadmin stop-domain domain1
+  sudo -u gladmin $GLASSFISHPATH/asadmin stop-domain domain1
   ;;
   *)
   echo $"usage: $0 {start|stop|restart}"
@@ -424,8 +430,8 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   * Our first step is to change the master password. Glassfish uses it to protect the domain-encrypted files from unauthorized access, i.e. the certificate store which contains the certificates for `https` communication. When Glassfish is starting up it tries to read such "secured" files - for exactly this purpose Glassfish needs to be provided with the master password either in an interactive way or in a non-interactive way. I will choose the non-interactive way because we want our Glassfish to start up on Ubuntu reboot as a deamon (in the Windows world this would be called a service). This is necessary so that the `start-domain` command can start the server without having to prompt the user. To accomplish this we need to set the `savemasterpassword` option to true. This option indicates whether the master password should be written to the file system. The file is called master-password and can be found at `/home/glassfish/glassfish/domains/domain1/master-password`. To change the master password you have to ensure that Glassfish is not running - only then you can call the command `change-master-password` which will interactively ask you for the new password. Here are the commands:
 
   ```
-  #switch user to glassfish (stay with this user for complete Step 6!)
-  sudo su glassfish
+  #switch user to gladmin (stay with this user for complete Step 6!)
+  sudo su gladmin
 
   #change master password, default=changeit
   /home/glassfish/bin/asadmin change-master-password --savemasterpassword=true
