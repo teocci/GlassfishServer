@@ -434,7 +434,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   sudo su gladmin
 
   #change master password, default=changeit
-  /home/glassfish/bin/asadmin change-master-password --savemasterpassword=true
+  asadmin change-master-password --savemasterpassword=true
   #prompt: choose your new master password ==> myMasterPwd
   # ==> stores file to /home/glassfish/glassfish/domains/domain1/master-password
   ```
@@ -479,9 +479,9 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   keytool -list -keystore keystore.jks -storepass myMasterPwd
   keytool -delete -alias s1as -keystore keystore.jks -storepass myMasterPwd
   keytool -delete -alias glassfish-instance -keystore keystore.jks -storepass myMasterPwd
-  keytool -keysize 4096 -genkey -alias myAlias -keyalg RSA -dname "CN=nabisoft,O=nabisoft,L=Mannheim,S=Germany,C=DE" -validity 3650 -keypass myMasterPwd -storepass myMasterPwd -keystore keystore.jks
-  keytool -keysize 4096 -genkey -alias s1as -keyalg RSA -dname "CN=nabisoft,O=nabisoft,L=Mannheim,S=Germany,C=DE" -validity 3650 -keypass myMasterPwd -storepass myMasterPwd -keystore keystore.jks
-  keytool -keysize 4096 -genkey -alias glassfish-instance -keyalg RSA -dname "CN=nabisoft,O=nabisoft,L=Mannheim,S=Germany,C=DE" -validity 3650 -keypass myMasterPwd -storepass myMasterPwd -keystore keystore.jks
+  keytool -keysize 4096 -genkey -alias myAlias -keyalg RSA -dname "CN=teocci,O=teocci,L=Daejeon,S=Korea,C=KR" -validity 3650 -keypass myMasterPwd -storepass myMasterPwd -keystore keystore.jks
+  keytool -keysize 4096 -genkey -alias s1as -keyalg RSA -dname "CN=teocci,O=teocci,L=Daejeon,S=Korea,C=KR" -validity 3650 -keypass myMasterPwd -storepass myMasterPwd -keystore keystore.jks
+  keytool -keysize 4096 -genkey -alias glassfish-instance -keyalg RSA -dname "CN=teocci,O=teocci,L=Daejeon,S=Korea,C=KR" -validity 3650 -keypass myMasterPwd -storepass myMasterPwd -keystore keystore.jks
   keytool -list -keystore keystore.jks -storepass myMasterPwd
 
   #make sure that keystore.jks and cacerts.jks stay in sync, so let's update cacerts.jks:
