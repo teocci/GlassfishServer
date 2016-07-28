@@ -1,5 +1,5 @@
-# Installing Glassfish 4.1.1 on Ubuntu 14.04 LTS (from the command line)
-After my short tutorial [Web Application based on WebSocket API for Java](https://github.com/teocci/RealtimeBoard), I received a lot of emails asking me about How to install a Glassfish server on Ubuntu from the command line. Therefore, in this tutorial I will explain how to install a Glassfish 4.1.1 Server on an Ubuntu 14.04 LTS Server. I will also cover **some but NOT all*** security concerns. The steps have been executed successfully on Ubuntu 14.04 LTS Server edition (64-bit). You can use this tutorial for setting up a Glassfish server. I have tested everything by using Physical Servers and Virtual Machines, you can choose any hosting package offered by the provider of your choice. In all cases you need to make sure to have root access to your server. Of course, in this tutorial you have to execute lots of commands on the shell, so you should also need to be familiar with the Unix/Linux command line. After having this tutorial completed you can use your new Glassfish installation to host your own Java EE 7 [RealtimeBoard](https://github.com/teocci/RealtimeBoard) application.
+# Installing Glassfish 4.1.1 on Ubuntu 16.04 LTS and Ubuntu 14.04 LTS (from the command line)
+After my short tutorial [Web Application based on WebSocket API for Java](https://github.com/teocci/RealtimeBoard), I received a lot of emails asking me about How to install a Glassfish server on Ubuntu from the command line. Therefore, in this tutorial I will explain how to install a Glassfish 4.1.1 Server on an Ubuntu 14.04 LTS Server. I will also cover **some but NOT all*** security concerns. The steps have been executed successfully on `Ubuntu 16.04 LTS Server edition (64-bit)` and `Ubuntu 14.04 LTS Server edition (64-bit)`. You can use this tutorial for setting up a Glassfish server. I have tested everything by using Physical Servers and Virtual Machines, you can choose any hosting package offered by the provider of your choice. In all cases you need to make sure to have root access to your server. Of course, in this tutorial you have to execute lots of commands on the shell, so you should also need to be familiar with the Unix/Linux command line. After having this tutorial completed you can use your new Glassfish installation to host your own Java EE 7 [RealtimeBoard](https://github.com/teocci/RealtimeBoard) application.
 
 This is my first tutorial where I described how to install Glassfish on Ubuntu. So, I hope it will help others. Thanks for reading my tutorial, if you have any questions do not hesitate to contact me. Any feedback is welcome! Also feel free to leave comments or issues. For helping me to maintain my tutorials any donation is welcome. :)
 
@@ -51,8 +51,8 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 
   Now we have created a lot of rules. You could enter them always one by one, but we don't want this kind of effort. I suggest to enter the following `iptables` rules in a separate file which contains all of our `iptables` related ideas we discussed so far:
 
-  File: [iptables.ENABLE_4848.rules](https://github.com/teocci/GlassfishServer/blob/master/scripts/iptables.ENABLE_4848.rules)
-  File: [iptables.DISABLE_4848.rules](https://github.com/teocci/GlassfishServer/blob/master/scripts/iptables.DISABLE_4848.rules)
+  File: [iptables.ENABLE_4848.rules][1.1]
+  File: [iptables.DISABLE_4848.rules][1.2]
 
   I suggest to create a file called `iptables.DISABLE_4848.rules` which contains exactly everything from the file `iptables.ENABLE_4848.rules` but with line 28 commented. Of course, you have to make both files executable with the command `chmod +x $filename` (see below). Then you can simply run one of the scripts when ever you want to disable or enable the AdminGUI on port 4848, for instance `sudo ./iptables.DISABLE_4848.rules`. Making the `iptables` rules executable:
 
@@ -124,6 +124,9 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   ```
 
   Your firewall settings are loaded automatically whenever Ubuntu is starting up. We can continue with the next steps. Please do not forget that these are only some minimum firewall settings. For maximum security you might need to add your own `iptables` rules.
+
+  [1.1]: https://github.com/teocci/GlassfishServer/blob/master/scripts/iptables.ENABLE_4848.rules
+  [1.2]: https://github.com/teocci/GlassfishServer/blob/master/scripts/iptables.DISABLE_4848.rules
 
 ## 2. Setting up Java
 
@@ -391,8 +394,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
 
 ## 5. Glassfish autostart: adding init script to default runlevels
 
-  The init script is set up. Now we can add it to the default run levels. This way our Glassfish will startup whenever Ubuntu is restarted.
-  Here are the commands:
+  The init script is set up. Now we can add it to the default run levels. This way our Glassfish will startup whenever Ubuntu is restarted. Here are the commands:
 
   ```  
   #make the init script file executable
@@ -408,9 +410,7 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   update-rc.d -f apache2 remove
   ```
 
-  From now on you can start, stop or restart your Glassfish like this (Ubuntu will also do it this way):
-
-  Here are the commands:
+  From now on you can start, stop or restart your Glassfish like this. Here are the commands:
 
   ```
   #start
@@ -439,17 +439,17 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   # ==> stores file to /home/glassfish/glassfish/domains/domain1/master-password
   ```
 
-  * The next step is to change the administration password with `change-admin-password`. Because this command is a remote command we need to ensure that Glassfish is running before we can execute the command. Since we want "automatic login" we will create an admin password file allowing us to login without being asked for credetials (it will be stored at `/home/glassfish/.gfclient/pass`). Here are the commands:
+  * The next step is to change the administration password with `change-admin-password`. Because this command is a remote command we need to ensure that Glassfish is running before we can execute the command. Since we want "automatic login" we will create an admin password file allowing us to login without being asked for credentials (it will be stored at `/home/glassfish/.gfclient/pass`). If you are using the [iptables.ENABLE_4848.rules][1.1] then you probably need to uncomment the enable-secure-admin section. Here are the commands:
 
   ```
   #change admin password
-  /home/glassfish/bin/asadmin change-admin-password
+  asadmin change-admin-password
   #1. enter "admin" for user (default)
   #2. hit enter because default pwd is empty
   #3. choose you new pwd ==> myAdminPwd
 
   #now we have to start Glassfish
-  /home/glassfish/bin/asadmin start-domain domain1
+  asadmin start-domain domain1
 
   #login for automatic login...
   /home/glassfish/bin/asadmin login
@@ -458,8 +458,15 @@ Creating this tutorial meant a lot of effort - although I could reuse a lot of t
   #password = myAdminPwd
   #==> stores file to /home/glassfish/.gfclient/pass
 
+  #if you are using the iptables.ENABLE_4848.rules uncomment this section
+  #asadmin enable-secure-admin
+  #asadmin restart-domain domain1
+  #try to login using the https://yourdomain.com:4848/
+  #user = admin
+  #password = myAdminPwd
+
   #now stop Glassfish
-  /home/glassfish/bin/asadmin stop-domain domain1
+  asadmin stop-domain domain1
   ```
 
   * Glassfish is coming with a pre-configured certificate which is used for ssl (`https`). You can see it in the `keystore.jks` file if you check for the alias `s1as`. Since Glassfish 3.1 there is even another preconfigured certificate available: glassfish-instance. But that also means that everybody else can get these two certificates, the public keys, private keys, etc. With that information you could never be safe because "others" could "read" your data sent to Glassfish via `https`. That means you should always make sure to replace the pre-configured `s1as` and `glassfish-instance` entries in your `keystore`. But you should not delete them as long as the alias `s1as` and `glassfish-instance` are still in use. I faced some strange behavior as I did not think of that at the beginning when I simply deleted `s1as` - learn from my mistake and do not delete it for now... But we can help us with generating a new alias first `myAlias` and when ever needed or wanted we could change each occurrence of `s1as` to `myAlias` (i.e. via admin console) and then we could finally delete that `s1as`. The same has to be done also for `glassfish-instance`.
